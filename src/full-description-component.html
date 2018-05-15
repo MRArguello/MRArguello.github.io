@@ -1,0 +1,176 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="/bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="/bower_components/polymer/lib/utils/gestures.html">
+<link rel="import" href="/bower_components/shadycss/apply-shim.html">
+
+<link rel="import" href="/bower_components/google-map/google-map.html">
+<link rel="import" href="/bower_components/google-map/google-map-poly.html">
+<link rel="import" href="/bower_components/google-map/google-map-directions.html">
+<link rel="import" href="park-button.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="/bower_components/iron-image/iron-image.html">
+
+
+<link href="https://fonts.googleapis.com/css?family=Roboto:100,400" rel="stylesheet">
+
+<dom-module id="full-description-component">
+  <template is="dom-bind">
+    <style is="custom-style" include="shared-styles">
+    iron-image{
+      --iron-image-width :100%;
+      max-height:200px;
+    }
+    park-button.directions{
+      border-top:1px solid white;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.1) 0px 3px 1px -2px;
+    }
+
+    park-button.back{
+      width:30%;
+      --park-button-background:rgba(255,255,255,0.1);
+      --park-button-padding:5%;
+    }
+    .container{
+      padding-top:0;
+    }
+    .features{
+      width:100%;
+    }
+    .page-title{
+      text-transform:capitalize;
+      margin-top:4%;
+      font-weight:400;
+    }
+    .features span{
+      display:block;
+      text-align: center;
+      width:100%;
+      margin:2% 0 4% ;
+    }
+    form{
+      width: 100%;
+    }
+    google-map{
+      height: 150px;
+    width: 100%;
+    }
+    iron-image{
+      --iron-image-placeholder:{
+      	background-size:cover;
+        height: 100%;
+        width:100%;
+      }
+    }
+    @media only screen and (max-width: 736px) {
+           .container{
+            padding:0;
+           }
+      }
+    </style>
+    <div class="container">
+        <iron-image size="cover" src="[[park.IMG]]" placeholder="[[park.PLACEHOLDERIMG]]" preload="" fade="">
+        </iron-image>
+        <google-map map="{{map}}" zoom="20" latitude="[[park.latitude]]" longitude="[[park.longitude]]" api-key="AIzaSyClIc67i2Ebe5WX28z5XIAOK0utWiPQC_U">
+          <!-- This is commented because its buggy.
+          <google-map-poly closed fill-color="blue" fill-opacity=".5">
+            <dom-repeat items="[[park.WKT]]" as="point">
+                <template>
+                   <google-map-point latitude="[[point.latitude]]" longitude="[[point.longitude]]"></google-map-point>
+                </template>
+            </dom-repeat>
+         </google-map-poly>-->
+        <google-map-marker latitude="[[park.latitude]]" longitude="[[park.longitude]]" title="[[park.NAME]]"></google-map-marker>
+        </google-map>
+        <form action="http://maps.google.com/maps" method="get" target="_blank">
+           <input type="hidden" name="saddr" value="[[location.latitude]] [[location.longitude]]">
+           <input type="hidden" name="daddr" value="[[park.latitude]] [[park.longitude]]">
+           <park-button class="directions" type="submit" value="Get Directions"></park-button>
+        </form>
+        <span class="page-title">[[park.NAME]]</span>
+        <div class="features">
+            <dom-repeat items="[[parkFeatures]]" as="feature">
+                <template>
+                  <div>
+                    <span>[[feature]]</span>
+                  </div>
+                </template>
+            </dom-repeat>
+        </div>
+        <park-button class="back" on-click="back" value="back" hidden="[[button]]"></park-button>
+    </div>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+
+    class FullDescriptionComponent extends Polymer.Element {
+      static get is() { return 'full-description-component'; }
+      static get properties() {
+        return {
+          park: {
+            type: Object,
+            observer:'defineFeatures'
+          },
+          currentView: {
+            type: String,
+            notify: true
+          },
+          parkFeatures: {
+            type: Array,
+            value:[]
+          },
+          location: {
+            type: Object
+          },
+          hasList: {
+            type:Boolean,
+            observer:'hasListChanged'
+          },
+          button: {
+            type:Boolean
+          }
+        };
+      }
+
+      back(e){
+        this.currentView = "third"
+        window.history.pushState({}, null, '#/third');
+        window.dispatchEvent(new CustomEvent('location-changed'));  
+      };
+      defineFeatures(){
+        if(this.park){
+          this.parkFeatures = [];
+          let choice = this.park
+          if(choice.KIND === "PARQUE"){
+            this.parkFeatures.push('Lots of space');
+          }
+          if(choice.PETS){
+            this.parkFeatures.push('Open space for pets');
+          }
+          if(choice.EXCERCISE){
+            this.parkFeatures.push('Excercise Area');
+          }
+          if(choice.HAS_PLAYGROUND){
+          this.parkFeatures.push('Playground for Children');
+          }
+        }
+      }
+      hasListChanged(){
+        if(this.hasList){
+          this.button = false;
+        } else {
+          this.button = true;
+        }
+      }
+       keys(object) {
+         return Object.keys(object);
+       }
+    }
+
+    window.customElements.define(FullDescriptionComponent.is, FullDescriptionComponent);
+  </script>
+</dom-module>

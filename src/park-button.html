@@ -1,0 +1,72 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+
+<link href="https://fonts.googleapis.com/css?family=Roboto:100,400" rel="stylesheet">
+
+<dom-module id="park-button">
+  <template is="dom-bind">
+    <style is="custom-style">
+    :host{
+        width:100%;
+        box-sizing:border-box;
+        padding: 10px;
+        display:block;
+    }
+    button{
+        background:var(--park-button-background, transparent);
+        border:var(--park-button-border, 0);
+        font-size:1rem;
+        text-transform: uppercase;
+        color:white;
+        text-align:center;
+        width:100%;
+        line-height: 1;
+        margin:0;
+        padding:var(--park-button-padding,0);
+        font-weight:100;
+    }
+
+    button:hover{
+        opacity:var(--park-button-opacity-on-hover,0.8);
+        text-shadow: 1px 1px rgba(255, 255, 255, 0.2);
+    }
+    .hide{
+      display:none!important;
+    }
+    </style>
+<button type="[[type]]" class$="{{_getClass(hidden)}}">[[value]]</button>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+
+    class ParkButton extends Polymer.Element {
+      static get is() { return 'park-button'; }
+      static get properties() {
+        return {
+         value: {
+             type: String,
+             value: 'Submit'
+         },
+         type:{
+           type: String,
+           value:'submit'
+         },
+         hidden:{
+           type:Boolean,
+           notify:true
+         }
+        };
+      }
+      _getClass(hidden){
+         return hidden ? "hide" : "";
+      }
+    }
+
+
+
+    window.customElements.define(ParkButton.is, ParkButton);
+  </script>
+</dom-module>

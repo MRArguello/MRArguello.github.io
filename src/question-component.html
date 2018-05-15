@@ -1,0 +1,188 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="/bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="/bower_components/polymer/lib/utils/gestures.html">
+<link rel="import" href="/bower_components/shadycss/apply-shim.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="/bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="park-button.html">
+
+<link href="https://fonts.googleapis.com/css?family=Roboto:100,400" rel="stylesheet">
+
+<dom-module id="question-component">
+  <template is="dom-bind">
+    <style is="custom-style" include="shared-styles">
+      paper-checkbox{
+        font-size:1rem;
+        --paper-checkbox-size: 1rem;
+        --paper-checkbox-checked-color: rgba(255,255,255,0);
+        --paper-checkbox-label-checked-color:  rgba(255,255,255,1);
+        --paper-checkbox-unchecked-color:  rgba(255,255,255,0.5);
+        --paper-checkbox-label-color:  rgba(255,255,255,0.7);
+        margin:6% 0;
+      };
+      park-button.next{
+          width:30%;
+          --park-button-background:rgba(255,255,255,0.1);
+          --park-button-padding:5%;
+      }
+      .options{
+        margin-bottom:5%;
+      }
+    </style>
+
+    <div class="container">
+      <dom-if if="{{questionIsPositive()}}">
+        <template>
+              <h3 class="page-title">What do you want to find in the park?</h3>
+        </template>
+      </dom-if>
+      <dom-if if="{{!questionIsPositive()}}">
+          <template>
+            <h3 class="page-title">What do you want to avoid in the park?</h3>
+        </template>
+      </dom-if>
+      <div class="options">
+        <dom-repeat items="{{options}}" as="option">
+          <template>
+            <div>
+              <paper-checkbox name="options" id="[[option]]" value="[[option]]" on-checked-changed="answer">{{option}}</paper-checkbox>
+            </div>
+          </template>
+        </dom-repeat>
+      </div>
+      <park-button class="next" value="next" on-click="next"></park-button>
+    </div>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+
+    class QuestionComponent extends Polymer.Element {
+      static get is() { return 'question-component'; }
+      static get properties() {
+        return {
+          questionType: {
+            type: String,
+            value:'Positive'
+          },
+          answers: {
+            type: Array,
+            value:[]
+          },
+          options: {
+              type: Array
+          },
+          currentView: {
+            type: String,
+            notify: true
+          }
+        };
+      }
+      questionIsPositive(){
+        if (this.questionType === "Positive"){
+          return true
+        } else {
+          return false
+        }
+      };
+      next() {
+        if (this.questionIsPositive()){
+          this.currentView = 'second';
+          window.history.pushState({}, null, '#/second');
+          window.dispatchEvent(new CustomEvent('location-changed'));  
+        } else {
+          this.dispatchEvent(new CustomEvent('server-call'));
+          window.history.pushState({}, null, '#/third');
+          window.dispatchEvent(new CustomEvent('location-changed'));  
+        }
+      };
+      answer(event){
+        let answerValue = event.target.value
+
+        if(event.target.checked){
+          if(this.questionIsPositive()){
+            switch(answerValue){ 
+              case 'Lots of space':
+                this.answers.KIND = 'PARQUE'
+              break 
+              case 'Playground for Children':
+                this.answers.HAS_PLAYGROUND = 'TRUE'
+              break
+              case 'Excercise Area':
+                this.answers.EXCERCISE = 'TRUE'
+              break
+              case 'Open space for Pets':
+                this.answers.PETS = 'TRUE'
+              break
+            }
+          } else {
+            switch(answerValue){ 
+              case 'Lots of space':
+                this.answers.KIND = 'PLAZA'
+              break 
+              case 'Playground for Children':
+                this.answers.HAS_PLAYGROUND = 'FALSE'
+              break
+              case 'Excercise Area':
+                this.answers.EXCERCISE = 'FALSE'
+              break
+              case 'Open space for Pets':
+                this.answers.PETS = 'FALSE'
+              break
+            }
+          }
+
+          let answerIndex = this.answers.indexOf(answerValue);
+          
+          this.notifySplices('answers',[{
+             index:answerIndex,
+             removed:[answerValue],
+             addedCount:1,
+             object:this.answers,
+             type:'splice'
+          }]);
+          
+          return
+        }
+          
+        var index
+        
+        switch(answerValue){ 
+          case 'Lots of space':
+            this.answers.indexOf('KIND');
+            delete this.answers.KIND
+          break 
+          case 'Playground for Children':
+            this.answers.indexOf('HAS_PLAYGROUND');
+            delete this.answers.HAS_PLAYGROUND
+          break
+          case 'Excercise Area':
+            this.answers.indexOf('EXCERCISE');
+            delete this.answers.EXCERCISE
+          break
+          case 'Open space for Pets':
+            this.answers.indexOf('PETS');
+            delete this.answers.PETS
+          break
+        }
+
+        this.notifySplices('answers',[{
+            index:index,
+            removed:[answerValue],
+            addedCount:1,
+            object:this.answers,
+            type:'splice'
+        }]);
+      }
+    }
+
+
+
+    window.customElements.define(QuestionComponent.is, QuestionComponent);
+  </script>
+</dom-module>
