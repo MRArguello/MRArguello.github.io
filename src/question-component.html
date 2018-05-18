@@ -3,9 +3,9 @@
 <link rel="import" href="/bower_components/polymer/lib/elements/dom-if.html">
 <link rel="import" href="/bower_components/polymer/lib/utils/gestures.html">
 <link rel="import" href="/bower_components/shadycss/apply-shim.html">
+<link rel="import" href="/bower_components/paper-checkbox/paper-checkbox.html">
 
 <link rel="import" href="shared-styles.html">
-<link rel="import" href="/bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="park-button.html">
 
 <link href="https://fonts.googleapis.com/css?family=Roboto:100,400" rel="stylesheet">
@@ -61,7 +61,6 @@
      * @customElement
      * @polymer
      */
-
     class QuestionComponent extends Polymer.Element {
       static get is() { return 'question-component'; }
       static get properties() {
@@ -83,26 +82,25 @@
           }
         };
       }
+
       questionIsPositive(){
-        if (this.questionType === "Positive"){
-          return true
-        } else {
-          return false
-        }
+        return this.questionType === "Positive";
       };
+
       next() {
         if (this.questionIsPositive()){
           this.currentView = 'second';
-          window.history.pushState({}, null, '#/second');
-          window.dispatchEvent(new CustomEvent('location-changed'));  
+          window.history.pushState({}, null, '#/second');        
         } else {
           this.dispatchEvent(new CustomEvent('server-call'));
-          window.history.pushState({}, null, '#/third');
-          window.dispatchEvent(new CustomEvent('location-changed'));  
+          window.history.pushState({}, null, '#/third');  
         }
+        window.dispatchEvent(new CustomEvent('location-changed'));  
       };
+
       answer(event){
-        let answerValue = event.target.value
+        let answerValue = event.target.value;
+        let index;
 
         if(event.target.checked){
           if(this.questionIsPositive()){
@@ -135,10 +133,9 @@
                 this.answers.PETS = 'FALSE'
               break
             }
-          }
+          };
 
-          let answerIndex = this.answers.indexOf(answerValue);
-          
+          let answerIndex = this.answers.indexOf(answerValue);   
           this.notifySplices('answers',[{
              index:answerIndex,
              removed:[answerValue],
@@ -146,12 +143,9 @@
              object:this.answers,
              type:'splice'
           }]);
-          
-          return
+          return;
         }
           
-        var index
-        
         switch(answerValue){ 
           case 'Lots of space':
             this.answers.indexOf('KIND');
@@ -169,7 +163,7 @@
             this.answers.indexOf('PETS');
             delete this.answers.PETS
           break
-        }
+        };
 
         this.notifySplices('answers',[{
             index:index,
@@ -180,8 +174,6 @@
         }]);
       }
     }
-
-
 
     window.customElements.define(QuestionComponent.is, QuestionComponent);
   </script>

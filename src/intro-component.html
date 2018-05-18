@@ -63,24 +63,25 @@
           },
         };
       }
+
       getLocation() {
           if (navigator.geolocation) {
-                this.spinner = true
-                this.button = true
-                this.msg = "Please wait..."
+                this.spinner = true;
+                this.button = true;
+                this.msg = "Please wait...";
                 navigator.geolocation.getCurrentPosition((position)=>{
                   this.userLocation.latitude = position.coords.latitude;
                   this.notifyPath('this.userLocation.latitude');
                   this.userLocation.longitude = position.coords.longitude;
                   this.notifyPath('this.userLocation.latitude');
-                  this.spinner = false
-                  this.msg = "Sucess! Your Coordinates are "  + this.userLocation.latitude + ' ' + this.userLocation.longitude
+                  this.spinner = false;
+                  this.msg = "Sucess! Your Coordinates are "  + this.userLocation.latitude + ' ' + this.userLocation.longitude;
                   setTimeout(() => {this.next()}, 1000);
               });
           } else {
-              this.spinner = false
+              this.spinner = false;
               this.msg = "Geolocation is not supported by this browser.";
-          }
+          };
       }
 
       next() {
@@ -89,8 +90,6 @@
           window.dispatchEvent(new CustomEvent('location-changed'));  
       };
     }
-
-
 
     window.customElements.define(IntroComponent.is, IntroComponent);
   </script>

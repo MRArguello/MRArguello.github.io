@@ -32,7 +32,7 @@
         --paper-card-header-color: white;
         --paper-card-header: {
             height: 150px;
-          };
+        };
         --paper-card-header-text: {
           width:100%;
           padding:16px 0;
@@ -52,9 +52,8 @@
           --iron-image-placeholder_-_width:100%;
         }
       }
-
       park-button{
-      border-top: 1px solid #fafafa;
+        border-top: 1px solid #fafafa;
       }
       form{
         width:100%;
@@ -74,20 +73,20 @@
             filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#a6000000',GradientType=0 ); /* IE6-9 */
           };
           --paper-card-header-image:{
-                width: auto;
-                height: 100%;
-                --iron-image-height: 100%;
-                --iron-image-width: auto;
-                --iron-image-placeholder_-_background-size:cover;
-                --iron-image-placeholder_-_height: 100%;
-                --iron-image-placeholder_-_width:100%;
-                };
-            }
+            width: auto;
+            height: 100%;
+            --iron-image-height: 100%;
+            --iron-image-width: auto;
+            --iron-image-placeholder_-_background-size:cover;
+            --iron-image-placeholder_-_height: 100%;
+            --iron-image-placeholder_-_width:100%;
+          };
         }
-  </style>
+      }
+    </style>
+    
       <div class="container">
         <span class="page-title">We found many options</span>
-
         <div class="content">
             <dom-repeat items="{{results}}" as="result">
                 <template>
@@ -109,7 +108,6 @@
      * @customElement
      * @polymer
      */
-
     class ListComponent extends Polymer.Element {
       static get is() { return 'list-component'; }
       static get properties() {
@@ -131,12 +129,13 @@
           },
         };
       }
+
       fullView(e) {
-       e.stopPropagation();
-       this.park = e.model.result;
-       this.currentView = 'fourth';
-       window.history.pushState({}, null, '#/fourth');
-       window.dispatchEvent(new CustomEvent('location-changed'));  
+        e.stopPropagation();
+        this.park = e.model.result;
+        this.currentView = 'fourth';
+        window.history.pushState({}, null, '#/fourth');
+        window.dispatchEvent(new CustomEvent('location-changed'));  
       };
     }
     
